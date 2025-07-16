@@ -2,11 +2,11 @@ import Foundation
 
 public struct SpamDetector {
     public let config: Config
-    public let ignoreWhiteSpace: Bool
+    public let stripWhiteSpace: Bool
     
-    public init(config: Config, ignoreWhiteSpace: Bool = false) {
+    public init(config: Config, stripWhiteSpace: Bool = false) {
         self.config = config
-        self.ignoreWhiteSpace = ignoreWhiteSpace
+        self.stripWhiteSpace = stripWhiteSpace
     }
     
     public func check(_ text: String, userReputation: Int? = nil) -> Result {
@@ -26,7 +26,7 @@ public struct SpamDetector {
         }
         
         var text = text
-        if ignoreWhiteSpace {
+        if stripWhiteSpace {
             text.removeAll { $0.isWhitespace }
         }
         
@@ -44,14 +44,14 @@ public struct SpamDetector {
         
         for regex in config.regex ?? [] {
             if let swiftRegex = try? Regex(regex.regex) {
-                if let firstMatch = try? swiftRegex.firstMatch(in: text) {
+                if (try? swiftRegex.firstMatch(in: text)) != nil {
                     spamScore += regex.spamScore
                     foundRegex.append(regex)
                 }
             }
         }
         
-        var result = Result(
+        let result = Result(
             isSpam: spamScore >= config.spamScoreThreshold,
             details: .init(
                 foundSubstrings: foundSubstrings,
