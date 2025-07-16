@@ -2,9 +2,7 @@ import Testing
 import Foundation
 @testable import SpamDetector
 
-@Test func example() async throws {
-    let url = Bundle.module.url(forResource: "test_config", withExtension: "json")!
-    let config = Config.fromLocalFileUrl(jsonUrl: url)!
+func withConfig(_ config: SpamDetector.Config) async throws {
     let detector = SpamDetector(config: config)
     
     //TODO: tests with substrings
@@ -17,6 +15,17 @@ import Foundation
     
     let notSpamResults = examplesWithoutSpam.map { detector.check($0) }
     #expect(notSpamResults.allSatisfy { !$0.isSpam })
+}
+
+@Test func fromLocalFile() async throws {
+    let url = Bundle.module.url(forResource: "test_config", withExtension: "json")!
+    let config = SpamDetector.Config.fromLocalFileUrl(jsonUrl: url)!
+    try await withConfig(config)
+}
+
+@Test func fromUrl() async throws {
+    let config = await SpamDetector.Config.fromRemoteUrl(jsonUrl: "https://raw.githubusercontent.com/WilhelmOks/SpamDetector/refs/heads/main/Tests/SpamDetectorTests/test_config.json")!
+    try await withConfig(config)
 }
 
 let examplesWithUrls: [String] = [

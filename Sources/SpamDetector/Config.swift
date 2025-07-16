@@ -1,22 +1,24 @@
 import Foundation
 
-public struct Config: Decodable {
-    /// The minimum spam score that a text needs to have to be considered spam.
-    public let spamScoreThreshold: Int
-    
-    /// If the user has a higher reputation than this value, the text is not considered spam.
-    /// Reputation can be anything that is an indicator of the user's credibility or trust, such as upvotes, likes or karma.
-    /// Can be omitted if there is no reputation system.
-    public let userReputationThreshold: Int?
-    
-    /// Substrings to search for and their respective spam scores.
-    public let substrings: [Substring]?
-    
-    /// Regex to search for matches and their respective spam scores.
-    public let regex: [Regex]?
+public extension SpamDetector {
+    struct Config: Decodable {
+        /// The minimum spam score that a text needs to have to be considered spam.
+        public let spamScoreThreshold: Int
+        
+        /// If the user has a higher reputation than this value, the text is not considered spam.
+        /// Reputation can be anything that is an indicator of the user's credibility or trust, such as upvotes, likes or karma.
+        /// Can be omitted if there is no reputation system.
+        public let userReputationThreshold: Int?
+        
+        /// Substrings to search for and their respective spam scores.
+        public let substrings: [Substring]?
+        
+        /// Regex to search for matches and their respective spam scores.
+        public let regex: [Regex]?
+    }
 }
 
-public extension Config {
+public extension SpamDetector.Config {
     struct Substring: Decodable {
         /// If the text contains this substring, the spam score will increase.
         /// The search is case insensitive.
@@ -38,12 +40,12 @@ public extension Config {
     }
 }
  
-public extension Config {
+public extension SpamDetector.Config {
     static func fromJsonData(_ data: Data) throws -> Self {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         decoder.allowsJSON5 = true
-        return try decoder.decode(Config.self, from: data)
+        return try decoder.decode(Self.self, from: data)
     }
     
     static func fromLocalFileUrl(jsonUrl: URL) -> Self? {
