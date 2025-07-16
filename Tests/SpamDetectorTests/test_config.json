@@ -1,0 +1,30 @@
+{
+    "spam_score_threshold": 100,
+    "user_reputation_threshold": 10,
+    "substrings": [
+        {
+            "substring": "crypto",
+            "spam_score": 50
+        },
+        {
+            "substring": "recover",
+            "spam_score": 60
+        },
+        {
+            "substring": "hack",
+            "spam_score": 50
+        },
+    ],
+    "regex": [
+        {
+            //"regex": "\([+,(,0-9,),-]{7,}", // a phone number
+            "regex": "(?i)(?:\+|\(?\s*\+?\s*\)?\s*)?\d{1,4}(?:[\s\-\.\[\]\(\)_]|dot|plus){0,3}\d{1,4}(?:[\s\-\.\[\]\(\)_]|dot|plus){0,3}\d{2,5}(?:[\s\-\.\[\]\(\)_]|dot|plus){0,3}\d{2,5}", // a phone number
+            "spam_score": 110
+        },
+        {
+            //"regex": "([\w\d]\.[\w\d]{2,5}\/[\w\d]+|http:|https:|www)", // a url
+            "regex": "(?i)\b(?:h\s*[\[:]*\s*(?:tt|xx)\s*p\s*s?\s*[\]:]*\s*\/\/)?(?:w\s*w\s*w\s*\.\s*)?[a-z0-9][\s\.\[\]dota-z0-9\-]{1,64}(?:\s*(?:\.|\[\.]|\s*dot\s*)\s*[a-z]{2,10})+(?:\s*[\/\\]\s*\S*)?", // a url
+            "spam_score": 50
+        },
+    ]
+}
