@@ -20,7 +20,10 @@ let package = Package(
             name: "SpamDetector"),
         .testTarget(
             name: "SpamDetectorTests",
-            dependencies: ["SpamDetector"]
+            dependencies: ["SpamDetector"],
+            resources: [
+                .copy("test_config.json"),
+            ]
         ),
     ]
 )

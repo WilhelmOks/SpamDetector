@@ -15,22 +15,27 @@ public struct Config: Decodable {
     /// Regex to search for matches and their respective spam scores.
     public let regex: [Regex]?
     
-    public static func fromBundle(jsonFileName: String) -> Self? {
-        let fileNameParts = jsonFileName.split(maxSplits: 1, whereSeparator: { $0 == "." }).map { String($0) }
-        let fileName = fileNameParts.first ?? jsonFileName
-        let fileExtension = fileNameParts.last ?? ""
-        guard let filePath = Bundle.main.path(forResource: fileName, ofType: fileExtension) else { return nil }
+    public static func fromLocalFileUrl(jsonUrl: URL) -> Self? {
         do {
-            let contents = try Data(contentsOf: URL(filePath: filePath))
+            let contents = try Data(contentsOf: jsonUrl)
             return try Self.decode(contents)
         } catch {
             return nil
         }
     }
     
-    public static func fromUrl(jsonFileUrl: String) async -> Self? {
+    public static func fromBundle(jsonFileName: String) -> Self? {
+        let fileNameParts = jsonFileName.split(maxSplits: 1, whereSeparator: { $0 == "." }).map { String($0) }
+        let fileName = fileNameParts.first ?? jsonFileName
+        let fileExtension = fileNameParts.last ?? ""
+        guard let filePath = Bundle.main.path(forResource: fileName, ofType: fileExtension) else { return nil }
+        let url = URL(filePath: filePath)
+        return fromLocalFileUrl(jsonUrl: url)
+    }
+    
+    public static func fromRemoteUrl(jsonUrl: String) async -> Self? {
         let session = URLSession(configuration: .ephemeral)
-        guard let url = URL(string: jsonFileUrl) else { return nil }
+        guard let url = URL(string: jsonUrl) else { return nil }
         guard let contents = try? await session.data(for: .init(url: url)).0 else { return nil }
         return try? Self.decode(contents)
     }
@@ -61,5 +66,8 @@ public extension Config {
         
         /// The spam score that will be added to the text if the regex finds a match in it.
         public let spamScore: Int
+        
+        /// A description for what the regex tries to match.
+        public let description: String?
     }
 }
