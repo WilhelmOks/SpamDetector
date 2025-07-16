@@ -1,3 +1,4 @@
+import Foundation
 
 public struct Config: Decodable {
     /// The minimum spam score that a text needs to have to be considered spam.
@@ -8,8 +9,38 @@ public struct Config: Decodable {
     /// Can be omitted if there is no reputation system.
     public let userReputationThreshold: Int?
     
+    /// Substrings to search for and their respective spam scores.
     public let substrings: [Substring]?
+    
+    /// Regex to search for matches and their respective spam scores.
     public let regex: [Regex]?
+    
+    public static func fromBundle(jsonFileName: String) -> Self? {
+        let fileNameParts = jsonFileName.split(maxSplits: 1, whereSeparator: { $0 == "." }).map { String($0) }
+        let fileName = fileNameParts.first ?? jsonFileName
+        let fileExtension = fileNameParts.last ?? ""
+        guard let filePath = Bundle.main.path(forResource: fileName, ofType: fileExtension) else { return nil }
+        do {
+            let contents = try Data(contentsOf: URL(filePath: filePath))
+            return try Self.decode(contents)
+        } catch {
+            return nil
+        }
+    }
+    
+    public static func fromUrl(jsonFileUrl: String) async -> Self? {
+        let session = URLSession(configuration: .ephemeral)
+        guard let url = URL(string: jsonFileUrl) else { return nil }
+        guard let contents = try? await session.data(for: .init(url: url)).0 else { return nil }
+        return try? Self.decode(contents)
+    }
+    
+    private static func decode(_ data: Data) throws -> Self {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.allowsJSON5 = true
+        return try decoder.decode(Config.self, from: data)
+    }
 }
 
 public extension Config {
