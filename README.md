@@ -9,7 +9,7 @@ The rules and logic for the spam detection are provided by a config in json form
 
 Here is an example:
 
-```code:json
+```json5
 {
     // The minimum spam score that a text needs to have to be considered spam.
     "spam_score_threshold": 100,
@@ -46,19 +46,19 @@ Here is an example:
 
 This config can be loaded from a local file or a remote resource via a URL:
 
-```code:swift
+```swift
 if let url = Bundle.module.url(forResource: "test_config", withExtension: "json") {
     let config = SpamDetector.Config.fromLocalFileUrl(jsonUrl: url)
 }
 ```
 
-```code:swift
+```swift
 let config = await SpamDetector.Config.fromRemoteUrl(jsonUrl: "https://www.example.com/test_config.json")
 ```
 
 Then you can create a `SpamDetector` instance and check text for spam:
 
-```code:swift
+```swift
 let detector = SpamDetector(config: config)
 
 let result = detector.check("This is a text message which might be spam.")
