@@ -68,8 +68,8 @@ public struct SpamDetector {
 
 public extension SpamDetector {
     struct Result {
-        let isSpam: Bool
-        let details: Details
+        public let isSpam: Bool
+        public let details: Details
         
         public struct Details {
             public let foundSubstrings: [Config.Substring]
