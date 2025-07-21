@@ -15,6 +15,9 @@ public extension SpamDetector {
         
         /// Regex to search for matches and their respective spam scores.
         public let regex: [Regex]?
+        
+        /// Names of users which are known spammers.
+        public let users: [String]?
     }
 }
 

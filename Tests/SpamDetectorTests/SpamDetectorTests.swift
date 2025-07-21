@@ -16,6 +16,12 @@ func withConfig(_ config: SpamDetector.Config) async throws {
     
     let notSpamResults = examplesWithoutSpam.map { detector.check($0) }
     #expect(notSpamResults.allSatisfy { !$0.isSpam })
+    
+    let normalUserNameResult = detector.check("hello", userName: "LegitLuigi")
+    #expect(!normalUserNameResult.isSpam)
+    
+    let spamUserNameResult = detector.check("hello", userName: "slimyrat")
+    #expect(spamUserNameResult.isSpam)
 }
 
 @Test func fromLocalFile() async throws {

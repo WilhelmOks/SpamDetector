@@ -9,7 +9,27 @@ public struct SpamDetector {
         self.stripWhiteSpace = stripWhiteSpace
     }
     
-    public func check(_ text: String, userReputation: Int? = nil) -> Result {
+    public func check(_ text: String, userReputation: Int? = nil, userName: String? = nil) -> Result {
+        if let userName, !userName.isEmpty {
+            let spammerUserNames = config.users ?? []
+            let isSpammer = spammerUserNames.contains { spammerName in
+                userName.localizedCaseInsensitiveCompare(spammerName) == .orderedSame
+            }
+            if isSpammer {
+                return .init(
+                    isSpam: true,
+                    details: .init(
+                        foundSubstrings: [],
+                        foundRegex: [],
+                        foundByUserName: true,
+                        skippedDueToHighReputation: false,
+                        totalSpamScore: 0,
+                        spamScoreThreshold: config.spamScoreThreshold
+                    )
+                )
+            }
+        }
+        
         if let userReputation, let threshold = config.userReputationThreshold  {
             if userReputation > threshold {
                 return .init(
@@ -17,6 +37,7 @@ public struct SpamDetector {
                     details: .init(
                         foundSubstrings: [],
                         foundRegex: [],
+                        foundByUserName: false,
                         skippedDueToHighReputation: true,
                         totalSpamScore: 0,
                         spamScoreThreshold: config.spamScoreThreshold
@@ -56,6 +77,7 @@ public struct SpamDetector {
             details: .init(
                 foundSubstrings: foundSubstrings,
                 foundRegex: foundRegex,
+                foundByUserName: false,
                 skippedDueToHighReputation: false,
                 totalSpamScore: spamScore,
                 spamScoreThreshold: config.spamScoreThreshold
@@ -74,6 +96,7 @@ public extension SpamDetector {
         public struct Details {
             public let foundSubstrings: [Config.Substring]
             public let foundRegex: [Config.Regex]
+            public let foundByUserName: Bool
             public let skippedDueToHighReputation: Bool
             public let totalSpamScore: Int
             public let spamScoreThreshold: Int
