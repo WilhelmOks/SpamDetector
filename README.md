@@ -40,6 +40,10 @@ Here is an example:
             "description": "a url",
             "spam_score": 150,
         },
+    ],
+    "users": [
+        "SlimyRat",
+        "Spam4Life",
     ]
 }
 ```
