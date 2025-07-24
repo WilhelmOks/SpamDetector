@@ -1,7 +1,7 @@
 import Foundation
 
 public extension SpamDetector {
-    struct Config: Decodable {
+    struct Config: Decodable, Sendable {
         /// The minimum spam score that a text needs to have to be considered spam.
         public let spamScoreThreshold: Int
         
@@ -22,7 +22,7 @@ public extension SpamDetector {
 }
 
 public extension SpamDetector.Config {
-    struct Substring: Decodable {
+    struct Substring: Decodable, Sendable {
         /// If the text contains this substring, the spam score will increase.
         /// The search is case insensitive.
         public let substring: String
@@ -31,7 +31,7 @@ public extension SpamDetector.Config {
         public let spamScore: Int
     }
 
-    struct Regex: Decodable {
+    struct Regex: Decodable, Sendable {
         /// If the text contains a match with this regex, the spam score will increase.
         public let regex: String
         
