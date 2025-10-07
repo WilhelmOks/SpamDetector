@@ -18,6 +18,9 @@ public extension SpamDetector {
         
         /// Names of users which are known spammers.
         public let users: [String]?
+        
+        /// Names of users which are not spammers.
+        public let usersWhitelist: [String]?
     }
 }
 

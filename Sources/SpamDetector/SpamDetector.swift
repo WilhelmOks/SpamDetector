@@ -11,6 +11,26 @@ public struct SpamDetector {
     
     public func check(_ text: String, userReputation: Int? = nil, userName: String? = nil) -> Result {
         if let userName, !userName.isEmpty {
+            let noSpammerUserNames = config.usersWhitelist ?? []
+            let isNotSpammer = noSpammerUserNames.contains { noSpammerName in
+                userName.localizedCaseInsensitiveCompare(noSpammerName) == .orderedSame
+            }
+            if isNotSpammer {
+                return .init(
+                    isSpam: false,
+                    details: .init(
+                        foundSubstrings: [],
+                        foundRegex: [],
+                        foundByUserName: true,
+                        skippedDueToHighReputation: false,
+                        totalSpamScore: 0,
+                        spamScoreThreshold: config.spamScoreThreshold
+                    )
+                )
+            }
+        }
+        
+        if let userName, !userName.isEmpty {
             let spammerUserNames = config.users ?? []
             let isSpammer = spammerUserNames.contains { spammerName in
                 userName.localizedCaseInsensitiveCompare(spammerName) == .orderedSame
